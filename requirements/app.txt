@@ -9,4 +9,4 @@ torch==1.12.1+cu113
 torchaudio==0.12.1+cu113
 torchvision==0.13.1+cu113
 transformers==4.29.2
-xformers==0.0.13
+xformers==0.0.20
