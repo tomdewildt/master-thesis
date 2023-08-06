@@ -7,6 +7,6 @@ protobuf==4.23.4
 sentencepiece==0.1.99
 torch==1.13.1
 torchaudio==0.13.1
-torchvision==0.13.1+cu113
+torchvision==0.15.2
 transformers==4.31.0
 xformers==0.0.20
