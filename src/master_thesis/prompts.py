@@ -7,9 +7,6 @@ from master_thesis.examples import Example
 
 
 class FewShotChainOfThoughtPrompt(BasePrompt):
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(
         self,
         references: Union[List[str], None],
@@ -28,9 +25,6 @@ class FewShotChainOfThoughtPrompt(BasePrompt):
 
 
 class FewShotPrompt(BasePrompt):
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(
         self,
         references: Union[List[str], None],
@@ -49,9 +43,6 @@ class FewShotPrompt(BasePrompt):
 
 
 class InstructionPrompt(BasePrompt):
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(
         self,
         references: Union[List[str], None],
@@ -81,9 +72,6 @@ class LeastToMostPrompt(BasePrompt):
         ),
     ]
 
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(self, references: Union[List[str], None], question: str) -> str:
         prompt = f"""
         {self._format_examples(self._EXAMPLES)}
@@ -97,9 +85,6 @@ class LeastToMostPrompt(BasePrompt):
 
 
 class PlanAndSolvePrompt(BasePrompt):
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(self, references: Union[List[str], None], question: str) -> str:
         prompt = f"""
         {self._format_references(references)}
@@ -125,9 +110,6 @@ class SelfAskPrompt(BasePrompt):
         ),
     ]
 
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(self, references: Union[List[str], None], question: str) -> str:
         prompt = f"""
         {self._format_examples(self._EXAMPLES)}
@@ -141,10 +123,13 @@ class SelfAskPrompt(BasePrompt):
 
 
 class SelfConsistencyPrompt(BasePrompt):
+    _EMBEDDING_DISTANCE = "embedding_distance"
+    _STRING_DISTANCE = "string_distance"
+
     def __init__(
         self,
         model: BaseModel,
-        eval_type: Union["embedding_distance", "string_distance"] = "string_distance",
+        eval_type: Union[_EMBEDDING_DISTANCE, _STRING_DISTANCE] = _EMBEDDING_DISTANCE,
     ):
         super().__init__(model)
 
@@ -192,9 +177,6 @@ class SelfConsistencyPrompt(BasePrompt):
 
 
 class ZeroShotChainOfThoughtPrompt(BasePrompt):
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(self, references: Union[List[str], None], question: str) -> str:
         prompt = f"""
         {self._format_references(references)}
@@ -207,9 +189,6 @@ class ZeroShotChainOfThoughtPrompt(BasePrompt):
 
 
 class ZeroShotPrompt(BasePrompt):
-    def __init__(self, model: BaseModel):
-        super().__init__(model)
-
     def run(self, references: Union[List[str], None], question: str) -> str:
         prompt = f"""
         {self._format_references(references)}
