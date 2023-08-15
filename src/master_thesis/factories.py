@@ -1,14 +1,25 @@
 from typing import List
 
-from master_thesis.base import BaseModel
+from master_thesis.base import BaseModel, BasePrompt
 from master_thesis.models import (
     AnthropicChatModel,
     GoogleChatModel,
     GoogleTextModel,
-    HuggingFaceDecTextModel,
-    HuggingFaceEncDecTextModel,
+    HuggingFaceAutoregressiveTextModel,
+    HuggingFaceSeq2SeqTextModel,
     OpenAIChatModel,
     OpenAITextModel,
+)
+from master_thesis.prompts import (
+    FewShotChainOfThoughtPrompt,
+    FewShotPrompt,
+    InstructionPrompt,
+    LeastToMostPrompt,
+    PlanAndSolvePrompt,
+    SelfAskPrompt,
+    SelfConsistencyPrompt,
+    ZeroShotChainOfThoughtPrompt,
+    ZeroShotPrompt,
 )
 
 
@@ -20,40 +31,40 @@ class ModelFactory:
         "anthropic/claude-instant-v1-100k": AnthropicChatModel,
         "google/text-bison-001": GoogleTextModel,
         "google/chat-bison-001": GoogleChatModel,
-        "openai/gpt2": HuggingFaceDecTextModel,
-        "bigscience/bloom-560m": HuggingFaceDecTextModel,
-        "bigscience/bloom-1b1": HuggingFaceDecTextModel,
-        "bigscience/bloom-1b7": HuggingFaceDecTextModel,
-        "bigscience/bloom-3b": HuggingFaceDecTextModel,
-        "bigscience/bloom-7b1": HuggingFaceDecTextModel,
-        "bigscience/bloom": HuggingFaceDecTextModel,
-        "bigscience/bloomz-560m": HuggingFaceDecTextModel,
-        "bigscience/bloomz-1b1": HuggingFaceDecTextModel,
-        "bigscience/bloomz-1b7": HuggingFaceDecTextModel,
-        "bigscience/bloomz-3b": HuggingFaceDecTextModel,
-        "bigscience/bloomz-7b1": HuggingFaceDecTextModel,
-        "bigscience/bloomz": HuggingFaceDecTextModel,
-        "facebook/xglm-564M": HuggingFaceDecTextModel,
-        "facebook/xglm-1.7B": HuggingFaceDecTextModel,
-        "facebook/xglm-2.9B": HuggingFaceDecTextModel,
-        "facebook/xglm-4.5B": HuggingFaceDecTextModel,
-        "facebook/xglm-7.5B": HuggingFaceDecTextModel,
-        "meta-llama/Llama-2-7b-hf": HuggingFaceDecTextModel,
-        "meta-llama/Llama-2-7b-chat-hf": HuggingFaceDecTextModel,
-        "meta-llama/Llama-2-13b-hf": HuggingFaceDecTextModel,
-        "meta-llama/Llama-2-13b-chat-hf": HuggingFaceDecTextModel,
-        "meta-llama/Llama-2-70b-hf": HuggingFaceDecTextModel,
-        "meta-llama/Llama-2-70b-chat-hf": HuggingFaceDecTextModel,
-        "google/t5-small": HuggingFaceEncDecTextModel,
-        "google/t5-base": HuggingFaceEncDecTextModel,
-        "google/t5-large": HuggingFaceEncDecTextModel,
-        "google/t5-3b": HuggingFaceEncDecTextModel,
-        "google/t5-11b": HuggingFaceEncDecTextModel,
-        "google/flan-t5-small": HuggingFaceEncDecTextModel,
-        "google/flan-t5-base": HuggingFaceEncDecTextModel,
-        "google/flan-t5-large": HuggingFaceEncDecTextModel,
-        "google/flan-t5-xl": HuggingFaceEncDecTextModel,
-        "google/flan-t5-xxl": HuggingFaceEncDecTextModel,
+        "openai/gpt2": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloom-560m": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloom-1b1": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloom-1b7": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloom-3b": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloom-7b1": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloom": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloomz-560m": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloomz-1b1": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloomz-1b7": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloomz-3b": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloomz-7b1": HuggingFaceAutoregressiveTextModel,
+        "bigscience/bloomz": HuggingFaceAutoregressiveTextModel,
+        "facebook/xglm-564M": HuggingFaceAutoregressiveTextModel,
+        "facebook/xglm-1.7B": HuggingFaceAutoregressiveTextModel,
+        "facebook/xglm-2.9B": HuggingFaceAutoregressiveTextModel,
+        "facebook/xglm-4.5B": HuggingFaceAutoregressiveTextModel,
+        "facebook/xglm-7.5B": HuggingFaceAutoregressiveTextModel,
+        "meta-llama/Llama-2-7b-hf": HuggingFaceAutoregressiveTextModel,
+        "meta-llama/Llama-2-7b-chat-hf": HuggingFaceAutoregressiveTextModel,
+        "meta-llama/Llama-2-13b-hf": HuggingFaceAutoregressiveTextModel,
+        "meta-llama/Llama-2-13b-chat-hf": HuggingFaceAutoregressiveTextModel,
+        "meta-llama/Llama-2-70b-hf": HuggingFaceAutoregressiveTextModel,
+        "meta-llama/Llama-2-70b-chat-hf": HuggingFaceAutoregressiveTextModel,
+        "google/t5-small": HuggingFaceSeq2SeqTextModel,
+        "google/t5-base": HuggingFaceSeq2SeqTextModel,
+        "google/t5-large": HuggingFaceSeq2SeqTextModel,
+        "google/t5-3b": HuggingFaceSeq2SeqTextModel,
+        "google/t5-11b": HuggingFaceSeq2SeqTextModel,
+        "google/flan-t5-small": HuggingFaceSeq2SeqTextModel,
+        "google/flan-t5-base": HuggingFaceSeq2SeqTextModel,
+        "google/flan-t5-large": HuggingFaceSeq2SeqTextModel,
+        "google/flan-t5-xl": HuggingFaceSeq2SeqTextModel,
+        "google/flan-t5-xxl": HuggingFaceSeq2SeqTextModel,
         "openai/gpt-4": OpenAIChatModel,
         "openai/gpt-3.5-turbo": OpenAIChatModel,
         "openai/text-davinci-003": OpenAITextModel,
@@ -70,6 +81,32 @@ class ModelFactory:
             raise ValueError("invalid model")
 
         return self._MODEL_IDS[model_id](model_id)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}()>"
+
+
+class PromptFactory:
+    _PROMPT_IDS = {
+        "few-shot-cot": FewShotChainOfThoughtPrompt,
+        "few-shot": FewShotPrompt,
+        "instruction": InstructionPrompt,
+        "least-to-most": LeastToMostPrompt,
+        "plan-and-solve": PlanAndSolvePrompt,
+        "self-ask": SelfAskPrompt,
+        "self-consistency": SelfConsistencyPrompt,
+        "zero-shot-cot": ZeroShotChainOfThoughtPrompt,
+        "zero-shot": ZeroShotPrompt,
+    }
+
+    def list_prompts(self) -> List[str]:
+        return list(self._PROMPT_IDS.keys())
+
+    def get_prompt(self, prompt_id: str, model: BaseModel) -> BasePrompt:
+        if not self._PROMPT_IDS.get(prompt_id):
+            raise ValueError("invalid prompt")
+
+        return self._PROMPT_IDS[prompt_id](model)
 
     def __repr__(self):
         return f"<{self.__class__.__name__}()>"
