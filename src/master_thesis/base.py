@@ -1,6 +1,9 @@
-# pylint: disable=line-too-long
+import inspect
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Union
+
+
+from master_thesis.examples import Example
 
 
 class BaseModel(ABC):
@@ -30,3 +33,45 @@ class BaseModel(ABC):
 
     def __repr__(self):
         return f"<{self.__class__.__name__}(model_id={self._model_id}, max_tokens={self._max_tokens}, stop_sequences={self._stop_sequences}, temperature={self._temperature}, top_p={self._top_p})>"
+
+
+class BasePrompt(ABC):
+    _model: BaseModel
+
+    def __init__(self, model: BaseModel):
+        self._model = model
+
+    @abstractmethod
+    def run(self, references: List[str], question: str) -> str:
+        raise NotImplementedError
+
+    def _format_references(self, references: Union[List[str], None]) -> str:
+        if not references:
+            return ""
+
+        return "\n".join(references)
+
+    def _format_examples(self, examples: Union[List[Example], None]) -> str:
+        if not examples:
+            return ""
+
+        prompts = [
+            self._format_prompt(
+                f"""
+                {self._format_references(example.references)}
+                
+                Q: {example.question}
+                A: {example.answer}
+                ---
+                """
+            )
+            for example in examples
+        ]
+
+        return "\n".join(prompts)
+
+    def _format_prompt(self, text: str):
+        return inspect.cleandoc(text).replace("  ", "").strip()
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}(model={self._model})>"

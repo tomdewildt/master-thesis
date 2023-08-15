@@ -98,7 +98,7 @@ class GoogleTextModel(BaseModel):
         return output
 
 
-class HuggingFaceDecTextModel(BaseModel):
+class HuggingFaceAutoregressiveTextModel(BaseModel):
     def __init__(
         self,
         model_id: str,
@@ -144,7 +144,7 @@ class HuggingFaceDecTextModel(BaseModel):
         return output
 
 
-class HuggingFaceEncDecTextModel(BaseModel):
+class HuggingFaceSeq2SeqTextModel(BaseModel):
     def __init__(
         self,
         model_id: str,
