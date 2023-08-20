@@ -2,6 +2,7 @@ import inspect
 from abc import ABC, abstractmethod
 from typing import List, Union
 
+from datasets import Dataset
 
 from master_thesis.examples import Example
 
@@ -20,7 +21,7 @@ class BaseModel(ABC):
         stop_sequences: List[str],
         temperature: float,
         top_p: float,
-    ):
+    ) -> None:
         self._model_id = model_id
         self._max_tokens = max_tokens
         self._stop_sequences = stop_sequences
@@ -31,14 +32,14 @@ class BaseModel(ABC):
     def generate(self, prompt: str) -> str:
         pass
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(model_id={self._model_id}, max_tokens={self._max_tokens}, stop_sequences={self._stop_sequences}, temperature={self._temperature}, top_p={self._top_p})>"
 
 
 class BasePrompt(ABC):
     _model: BaseModel
 
-    def __init__(self, model: BaseModel):
+    def __init__(self, model: BaseModel) -> None:
         self._model = model
 
     @abstractmethod
@@ -70,8 +71,26 @@ class BasePrompt(ABC):
 
         return "\n".join(prompts)
 
-    def _format_prompt(self, text: str):
+    def _format_prompt(self, text: str) -> str:
         return inspect.cleandoc(text).replace("  ", "").strip()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(model={self._model})>"
+
+
+class BaseDataset(ABC):
+    def __init__(self) -> None:
+        pass
+
+    @property
+    @abstractmethod
+    def train(self) -> Dataset:
+        pass
+
+    @property
+    @abstractmethod
+    def test(self) -> Dataset:
+        pass
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}()>"

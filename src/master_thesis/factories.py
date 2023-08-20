@@ -1,6 +1,6 @@
 from typing import List
 
-from master_thesis.base import BaseModel, BasePrompt
+from master_thesis.base import BaseModel, BasePrompt, BaseDataset
 from master_thesis.models import (
     AnthropicChatModel,
     GoogleChatModel,
@@ -20,6 +20,13 @@ from master_thesis.prompts import (
     SelfConsistencyPrompt,
     ZeroShotChainOfThoughtPrompt,
     ZeroShotPrompt,
+)
+from master_thesis.datasets import (
+    COQADataset,
+    HotpotQADataset,
+    SQUADv1Dataset,
+    SQUADv2Dataset,
+    TriviaQADataset,
 )
 
 
@@ -82,7 +89,7 @@ class ModelFactory:
 
         return self._MODEL_IDS[model_id](model_id)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}()>"
 
 
@@ -108,5 +115,27 @@ class PromptFactory:
 
         return self._PROMPT_IDS[prompt_id](model)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}()>"
+
+
+class DatasetFactory:
+    _DATASET_IDS = {
+        "huggingface/coqa": COQADataset,
+        "hotpotqa": HotpotQADataset,
+        "squad-v1": SQUADv1Dataset,
+        "squad-v2": SQUADv2Dataset,
+        "triviaqa": TriviaQADataset,
+    }
+
+    def list_datasets(self) -> List[str]:
+        return list(self._DATASET_IDS.keys())
+
+    def get_dataset(self, dataset_id: str) -> BaseDataset:
+        if not self._DATASET_IDS.get(dataset_id):
+            raise ValueError("invalid dataset")
+
+        return self._DATASET_IDS[dataset_id](dataset_id)
+
+    def __repr__(self) -> str:
         return f"<{self.__class__.__name__}()>"
