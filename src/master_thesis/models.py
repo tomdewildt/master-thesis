@@ -1,6 +1,7 @@
 import os
 from typing import List
 
+import torch
 from langchain.llms import HuggingFacePipeline, OpenAI, VertexAI
 from langchain.chat_models import ChatAnthropic, ChatOpenAI, ChatVertexAI
 from langchain.schema import HumanMessage
@@ -8,6 +9,7 @@ from transformers import (
     AutoModelForCausalLM,
     AutoModelForSeq2SeqLM,
     AutoTokenizer,
+    BitsAndBytesConfig,
     pipeline,
 )
 
@@ -22,7 +24,7 @@ class AnthropicChatModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._anthropic_model_id = model_id.split("/")[1]
@@ -50,7 +52,7 @@ class GoogleChatModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._google_model_id = model_id.split("/")[1]
@@ -78,7 +80,7 @@ class GoogleTextModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._google_model_id = model_id.split("/")[1]
@@ -106,7 +108,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._hf_model_id = (
@@ -115,19 +117,20 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
             else model_id
         )
 
+        self._config = BitsAndBytesConfig()
         self._model = HuggingFacePipeline(
             pipeline=pipeline(
                 "text-generation",
                 model=AutoModelForCausalLM.from_pretrained(
                     self._hf_model_id,
                     device_map="auto",
-                    torch_dtype="auto",
+                    quantization_config=self._config,
                     use_auth_token=os.getenv("HUGGINGFACE_API_KEY"),
                 ),
                 tokenizer=AutoTokenizer.from_pretrained(
                     self._hf_model_id,
                     device_map="auto",
-                    torch_dtype="auto",
+                    quantization_config=self._config,
                     use_auth_token=os.getenv("HUGGINGFACE_API_KEY"),
                 ),
                 device_map="auto",
@@ -152,7 +155,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._hf_model_id = (
@@ -161,19 +164,25 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
             else model_id
         )
 
+        self._config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
         self._model = HuggingFacePipeline(
             pipeline=pipeline(
                 "text2text-generation",
                 model=AutoModelForSeq2SeqLM.from_pretrained(
                     self._hf_model_id,
                     device_map="auto",
-                    torch_dtype="auto",
+                    quantization_config=self._config,
                     use_auth_token=os.getenv("HUGGINGFACE_API_KEY"),
                 ),
                 tokenizer=AutoTokenizer.from_pretrained(
                     self._hf_model_id,
                     device_map="auto",
-                    torch_dtype="auto",
+                    quantization_config=self._config,
                     use_auth_token=os.getenv("HUGGINGFACE_API_KEY"),
                 ),
                 device_map="auto",
@@ -198,7 +207,7 @@ class OpenAIChatModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._openai_model_id = model_id.split("/")[1]
@@ -226,7 +235,7 @@ class OpenAITextModel(BaseModel):
         stop_sequences: List[str] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
-    ):
+    ) -> None:
         super().__init__(model_id, max_tokens, stop_sequences, temperature, top_p)
 
         self._openai_model_id = model_id.split("/")[1]
