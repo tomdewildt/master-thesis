@@ -6,6 +6,10 @@ from master_thesis.base import BaseModel, BasePrompt
 from master_thesis.examples import Example
 
 
+_EMBEDDING_DISTANCE = "embedding_distance"
+_STRING_DISTANCE = "string_distance"
+
+
 class FewShotChainOfThoughtPrompt(BasePrompt):
     def run(
         self,
@@ -123,14 +127,13 @@ class SelfAskPrompt(BasePrompt):
 
 
 class SelfConsistencyPrompt(BasePrompt):
-    _EMBEDDING_DISTANCE = "embedding_distance"
-    _STRING_DISTANCE = "string_distance"
+    _eval_type: Union[_EMBEDDING_DISTANCE, _STRING_DISTANCE]
 
     def __init__(
         self,
         model: BaseModel,
         eval_type: Union[_EMBEDDING_DISTANCE, _STRING_DISTANCE] = _EMBEDDING_DISTANCE,
-    ):
+    ) -> None:
         super().__init__(model)
 
         self._eval_type = eval_type
