@@ -121,7 +121,7 @@ class PromptFactory:
 
 class DatasetFactory:
     _DATASET_IDS = {
-        "huggingface/coqa": COQADataset,
+        "coqa": COQADataset,
         "hotpotqa": HotpotQADataset,
         "squad-v1": SQUADv1Dataset,
         "squad-v2": SQUADv2Dataset,
@@ -135,7 +135,7 @@ class DatasetFactory:
         if not self._DATASET_IDS.get(dataset_id):
             raise ValueError("invalid dataset")
 
-        return self._DATASET_IDS[dataset_id](dataset_id)
+        return self._DATASET_IDS[dataset_id]()
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}()>"
