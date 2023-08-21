@@ -22,7 +22,7 @@ help: ## Show this help
 init: ## Initialize the environment
 	terraform -chdir=./infrastructure init
 	for f in requirements/*.txt; do \
-		pip install -r "$$f" --extra-index-url https://download.pytorch.org/whl/cu113; \
+		pip install -r "$$f"; \
 	done
 
 ##
