@@ -51,3 +51,9 @@ variable "password" {
   default     = null
   sensitive   = true
 }
+
+variable "repository" {
+  type        = string
+  description = "The repository cloned to the virtual machine."
+  default     = "https://github.com/tomdewildt/master-thesis.git"
+}

@@ -12,6 +12,7 @@ data "template_cloudinit_config" "cic" {
     package_update: true
     package_upgrade: true
     packages:
+      - git
       - python3
       - python3-pip
       - ufw
@@ -86,6 +87,7 @@ data "template_cloudinit_config" "cic" {
           User=${var.username}
           Group=${var.username}
           WorkingDirectory=/home/${var.username}
+          Environment=PYTHONPATH=/home/${var.username}/src:/home/${var.username}/test
           Restart=always
           RestartSec=10
           [Install]
@@ -100,7 +102,6 @@ data "template_cloudinit_config" "cic" {
       - sudo -H -i -u ${var.username} bash -c "pip3 install -U jsonschema jupyter zipp"
       - sudo -H -i -u ${var.username} bash -c "jupyter notebook --generate-config"
       - echo "" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
-      - echo "## Custom config" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
       - echo "c.ServerApp.ip = '0.0.0.0'" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
       - echo "c.ServerApp.port = 8888" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
       - echo "c.ServerApp.port_retries = 0" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
@@ -111,6 +112,10 @@ data "template_cloudinit_config" "cic" {
       - echo "c.PasswordIdentityProvider.hashed_password = 'sha512::${sha512(var.password != null ? var.password : random_password.pw.result)}'" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
       - systemctl enable jupyter.service
       - systemctl restart jupyter.service
+      - sudo -H -i -u ${var.username} bash -c "git init"
+      - sudo -H -i -u ${var.username} bash -c "git remote add origin ${var.repository}"
+      - sudo -H -i -u ${var.username} bash -c "git fetch origin"
+      - sudo -H -i -u ${var.username} bash -c "git reset origin/master --hard"
     EOF
   }
 }
@@ -243,9 +248,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
 }
 
 resource "azurerm_virtual_machine_extension" "vme" {
-  name                 = "${var.namespace}-${var.name}-${var.environment}-${var.location}-01"
+  name                 = "${var.namespace}-${var.name}-vme-${var.environment}-${var.location}-01"
   virtual_machine_id   = azurerm_linux_virtual_machine.vm.id
   publisher            = "Microsoft.HpcCompute"
   type                 = "NvidiaGpuDriverLinux"
-  type_handler_version = "1.6"
+  type_handler_version = "1.2"
 }
