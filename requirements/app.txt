@@ -5,7 +5,7 @@ datasets==2.14.4
 google-cloud-aiplatform==1.31.0
 langchain==0.0.270
 openai==0.27.8
-peft==0.4.0
+peft==0.5.0
 protobuf==4.24.1
 rapidfuzz==3.2.0
 scipy==1.10.1
