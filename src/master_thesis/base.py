@@ -1,10 +1,43 @@
 import inspect
 from abc import ABC, abstractmethod
-from typing import List, Union
+from typing import List, Optional, Union
 
 from datasets import Dataset
 
 from master_thesis.examples import Example
+
+
+class BaseDataset(ABC):
+    _dataset_id: str
+    _train_limit: Optional[int]
+    _test_limit: Optional[int]
+
+    def __init__(
+        self,
+        dataset_id: str,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> None:
+        self._dataset_id = dataset_id
+        self._train_limit = train_limit
+        self._test_limit = test_limit
+
+    @property
+    @abstractmethod
+    def train(self) -> Dataset:
+        pass
+
+    @property
+    @abstractmethod
+    def test(self) -> Dataset:
+        pass
+
+    @property
+    def dataset_id(self) -> str:
+        return self._dataset_id
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}()>"
 
 
 class BaseModel(ABC):
@@ -30,6 +63,10 @@ class BaseModel(ABC):
 
     @abstractmethod
     def generate(self, prompt: str) -> str:
+        pass
+
+    @abstractmethod
+    def finetune(self, dataset: BaseDataset) -> "BaseModel":
         pass
 
     def __repr__(self) -> str:
@@ -76,21 +113,3 @@ class BasePrompt(ABC):
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(model={self._model})>"
-
-
-class BaseDataset(ABC):
-    def __init__(self) -> None:
-        pass
-
-    @property
-    @abstractmethod
-    def train(self) -> Dataset:
-        pass
-
-    @property
-    @abstractmethod
-    def test(self) -> Dataset:
-        pass
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}()>"
