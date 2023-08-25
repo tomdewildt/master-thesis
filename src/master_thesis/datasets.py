@@ -5,15 +5,20 @@ from datasets import Dataset, load_dataset, concatenate_datasets
 from master_thesis.base import BaseDataset
 
 
+RANDOM_SEED = 42
+
+
 class COQADataset(BaseDataset):
-    _dataset_id: str
     _train: Optional[Dataset]
     _test: Optional[Dataset]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> None:
+        super().__init__("coqa", train_limit, test_limit)
 
-        self._dataset_id = "coqa"
         self._dataset_dict = load_dataset(self._dataset_id)
         self._train = None
         self._test = None
@@ -21,22 +26,36 @@ class COQADataset(BaseDataset):
     @property
     def train(self) -> Dataset:
         if not self._train:
-            self._train = self._dataset_dict["train"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["train"].column_names,
+            self._train = (
+                self._dataset_dict["train"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["train"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._train_limit:
+                self._train = self._train.select(range(self._train_limit))
 
         return self._train
 
     @property
     def test(self) -> Dataset:
         if not self._test:
-            self._test = self._dataset_dict["validation"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["validation"].column_names,
+            self._test = (
+                self._dataset_dict["validation"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["validation"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._test_limit:
+                self._test = self._test.select(range(self._test_limit))
 
         return self._test
 
@@ -58,14 +77,16 @@ class COQADataset(BaseDataset):
 
 
 class HotpotQADataset(BaseDataset):
-    _dataset_id: str
     _train: Optional[Dataset]
     _test: Optional[Dataset]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> None:
+        super().__init__("hotpot_qa", train_limit, test_limit)
 
-        self._dataset_id = "hotpot_qa"
         self._dataset_dict = load_dataset(self._dataset_id, "fullwiki")
         self._train = None
         self._test = None
@@ -73,11 +94,18 @@ class HotpotQADataset(BaseDataset):
     @property
     def train(self) -> Dataset:
         if not self._train:
-            self._train = self._dataset_dict["train"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["train"].column_names,
+            self._train = (
+                self._dataset_dict["train"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["train"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._train_limit:
+                self._train = self._train.select(range(self._train_limit))
 
         return self._train
 
@@ -94,7 +122,12 @@ class HotpotQADataset(BaseDataset):
                 batched=True,
                 remove_columns=self._dataset_dict["test"].column_names,
             )
-            self._test = concatenate_datasets([validation, test])
+            self._test = concatenate_datasets([validation, test]).shuffle(
+                seed=RANDOM_SEED
+            )
+
+            if self._test_limit:
+                self._test = self._test.select(range(self._test_limit))
 
         return self._test
 
@@ -116,14 +149,16 @@ class HotpotQADataset(BaseDataset):
 
 
 class SQUADv1Dataset(BaseDataset):
-    _dataset_id: str
     _train: Optional[Dataset]
     _test: Optional[Dataset]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> None:
+        super().__init__("squad", train_limit, test_limit)
 
-        self._dataset_id = "squad"
         self._dataset_dict = load_dataset(self._dataset_id)
         self._train = None
         self._test = None
@@ -131,22 +166,36 @@ class SQUADv1Dataset(BaseDataset):
     @property
     def train(self) -> Dataset:
         if not self._train:
-            self._train = self._dataset_dict["train"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["train"].column_names,
+            self._train = (
+                self._dataset_dict["train"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["train"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._train_limit:
+                self._train = self._train.select(range(self._train_limit))
 
         return self._train
 
     @property
     def test(self) -> Dataset:
         if not self._test:
-            self._test = self._dataset_dict["validation"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["validation"].column_names,
+            self._test = (
+                self._dataset_dict["validation"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["validation"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._test_limit:
+                self._test = self._test.select(range(self._test_limit))
 
         return self._test
 
@@ -168,37 +217,53 @@ class SQUADv1Dataset(BaseDataset):
 
 
 class SQUADv2Dataset(BaseDataset):
-    _dataset_id: str
     _train: Optional[Dataset]
     _test: Optional[Dataset]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> None:
+        super().__init__("squad_v2", train_limit, test_limit)
 
-        self._dataset_id = "squad_v2"
-        self._dataset_dict = load_dataset(self._dataset_id)
+        self._dataset_dict = load_dataset(self.dataset_id)
         self._train = None
         self._test = None
 
     @property
     def train(self) -> Dataset:
         if not self._train:
-            self._train = self._dataset_dict["train"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["train"].column_names,
+            self._train = (
+                self._dataset_dict["train"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["train"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._train_limit:
+                self._train = self._train.select(range(self._train_limit))
 
         return self._train
 
     @property
     def test(self) -> Dataset:
         if not self._test:
-            self._test = self._dataset_dict["validation"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["validation"].column_names,
+            self._test = (
+                self._dataset_dict["validation"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["validation"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._test_limit:
+                self._test = self._test.select(range(self._test_limit))
 
         return self._test
 
@@ -220,14 +285,16 @@ class SQUADv2Dataset(BaseDataset):
 
 
 class TriviaQADataset(BaseDataset):
-    _dataset_id: str
     _train: Optional[Dataset]
     _test: Optional[Dataset]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(
+        self,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> None:
+        super().__init__("trivia_qa", train_limit, test_limit)
 
-        self._dataset_id = "trivia_qa"
         self._dataset_dict = load_dataset(self._dataset_id, "rc")
         self._train = None
         self._test = None
@@ -235,11 +302,18 @@ class TriviaQADataset(BaseDataset):
     @property
     def train(self) -> Dataset:
         if not self._train:
-            self._train = self._dataset_dict["train"].map(
-                self._format,
-                batched=True,
-                remove_columns=self._dataset_dict["train"].column_names,
+            self._train = (
+                self._dataset_dict["train"]
+                .map(
+                    self._format,
+                    batched=True,
+                    remove_columns=self._dataset_dict["train"].column_names,
+                )
+                .shuffle(seed=RANDOM_SEED)
             )
+
+            if self._train_limit:
+                self._train = self._train.select(range(self._train_limit))
 
         return self._train
 
@@ -256,7 +330,12 @@ class TriviaQADataset(BaseDataset):
                 batched=True,
                 remove_columns=self._dataset_dict["test"].column_names,
             )
-            self._test = concatenate_datasets([validation, test])
+            self._test = concatenate_datasets([validation, test]).shuffle(
+                seed=RANDOM_SEED
+            )
+
+            if self._test_limit:
+                self._test = self._test.select(range(self._test_limit))
 
         return self._test
 

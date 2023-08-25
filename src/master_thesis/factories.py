@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from master_thesis.base import BaseModel, BasePrompt, BaseDataset
 from master_thesis.models import (
@@ -131,11 +131,19 @@ class DatasetFactory:
     def list_datasets(self) -> List[str]:
         return list(self._DATASET_IDS.keys())
 
-    def get_dataset(self, dataset_id: str) -> BaseDataset:
+    def get_dataset(
+        self,
+        dataset_id: str,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> BaseDataset:
         if not self._DATASET_IDS.get(dataset_id):
             raise ValueError("invalid dataset")
 
-        return self._DATASET_IDS[dataset_id]()
+        return self._DATASET_IDS[dataset_id](
+            train_limit=train_limit,
+            test_limit=test_limit,
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}()>"
