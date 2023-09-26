@@ -7,7 +7,7 @@ langchain==0.0.270
 openai==0.27.8
 peft==0.4.0
 protobuf==4.24.1
-rapidfuzz==3.2.0
+rapidfuzz==3.3.1
 scipy==1.10.1
 sentencepiece==0.1.99
 tiktoken==0.4.0
