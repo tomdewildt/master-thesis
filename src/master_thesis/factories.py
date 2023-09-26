@@ -83,11 +83,24 @@ class ModelFactory:
     def list_models(self) -> List[str]:
         return list(self._MODEL_IDS.keys())
 
-    def get_model(self, model_id: str) -> BaseModel:
+    def get_model(
+        self,
+        model_id: str,
+        max_tokens: Optional[int] = None,
+        stop_sequences: Optional[List[str]] = None,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
+    ) -> BaseModel:
         if not self._MODEL_IDS.get(model_id):
             raise ValueError("invalid model")
 
-        return self._MODEL_IDS[model_id](model_id)
+        return self._MODEL_IDS[model_id](
+            model_id,
+            max_tokens,
+            stop_sequences,
+            temperature,
+            top_p,
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}()>"
