@@ -1,6 +1,20 @@
 from typing import List, Optional
 
-from master_thesis.base import BaseModel, BasePrompt, BaseDataset
+from master_thesis.base import BaseDataset, BaseMetric, BaseModel, BasePrompt
+from master_thesis.datasets import (
+    COQADataset,
+    HotpotQADataset,
+    SQUADv1Dataset,
+    SQUADv2Dataset,
+    TriviaQADataset,
+)
+from master_thesis.metrics import (
+    BERTScoreMetric,
+    BLEUMetric,
+    BLEURTMetric,
+    LLMEvalMetric,
+    ROUGEMetric,
+)
 from master_thesis.models import (
     AnthropicChatModel,
     GoogleChatModel,
@@ -21,13 +35,58 @@ from master_thesis.prompts import (
     ZeroShotChainOfThoughtPrompt,
     ZeroShotPrompt,
 )
-from master_thesis.datasets import (
-    COQADataset,
-    HotpotQADataset,
-    SQUADv1Dataset,
-    SQUADv2Dataset,
-    TriviaQADataset,
-)
+
+
+class DatasetFactory:
+    _DATASET_IDS = {
+        "coqa": COQADataset,
+        "hotpotqa": HotpotQADataset,
+        "squad-v1": SQUADv1Dataset,
+        "squad-v2": SQUADv2Dataset,
+        "triviaqa": TriviaQADataset,
+    }
+
+    def list_datasets(self) -> List[str]:
+        return list(self._DATASET_IDS.keys())
+
+    def get_dataset(
+        self,
+        dataset_id: str,
+        train_limit: Optional[int] = None,
+        test_limit: Optional[int] = None,
+    ) -> BaseDataset:
+        if not self._DATASET_IDS.get(dataset_id):
+            raise ValueError("invalid dataset")
+
+        return self._DATASET_IDS[dataset_id](
+            train_limit=train_limit,
+            test_limit=test_limit,
+        )
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}()>"
+
+
+class MetricFactory:
+    _METRIC_IDS = {
+        "bert-score": BERTScoreMetric,
+        "bleu": BLEUMetric,
+        "bleurt": BLEURTMetric,
+        "llm-eval": LLMEvalMetric,
+        "rouge": ROUGEMetric,
+    }
+
+    def list_metrics(self) -> List[str]:
+        return list(self._METRIC_IDS.keys())
+
+    def get_metric(self, metric_id) -> BaseMetric:
+        if not self._METRIC_IDS.get(metric_id):
+            raise ValueError("invalid metric")
+
+        return self._METRIC_IDS[metric_id]()
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}()>"
 
 
 class ModelFactory:
@@ -127,36 +186,6 @@ class PromptFactory:
             raise ValueError("invalid prompt")
 
         return self._PROMPT_IDS[prompt_id](model)
-
-    def __repr__(self) -> str:
-        return f"<{self.__class__.__name__}()>"
-
-
-class DatasetFactory:
-    _DATASET_IDS = {
-        "coqa": COQADataset,
-        "hotpotqa": HotpotQADataset,
-        "squad-v1": SQUADv1Dataset,
-        "squad-v2": SQUADv2Dataset,
-        "triviaqa": TriviaQADataset,
-    }
-
-    def list_datasets(self) -> List[str]:
-        return list(self._DATASET_IDS.keys())
-
-    def get_dataset(
-        self,
-        dataset_id: str,
-        train_limit: Optional[int] = None,
-        test_limit: Optional[int] = None,
-    ) -> BaseDataset:
-        if not self._DATASET_IDS.get(dataset_id):
-            raise ValueError("invalid dataset")
-
-        return self._DATASET_IDS[dataset_id](
-            train_limit=train_limit,
-            test_limit=test_limit,
-        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}()>"

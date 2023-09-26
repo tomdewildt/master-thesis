@@ -40,6 +40,15 @@ class BaseDataset(ABC):
         return f"<{self.__class__.__name__}()>"
 
 
+class BaseMetric(ABC):
+    @abstractmethod
+    def test(self, question: str, answer: str, prediction: str) -> float:
+        pass
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__}()>"
+
+
 class BaseModel(ABC):
     _model_id: str
     _max_tokens: int
