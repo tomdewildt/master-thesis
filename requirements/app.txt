@@ -4,7 +4,7 @@ bitsandbytes==0.41.1
 datasets==2.14.4
 google-cloud-aiplatform==1.31.0
 langchain==0.0.270
-openai==0.27.8
+openai==0.28.1
 peft==0.4.0
 protobuf==4.24.1
 rapidfuzz==3.2.0
