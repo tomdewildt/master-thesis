@@ -18,4 +18,4 @@ tiktoken==0.4.0
 torch==2.0.1
 transformers==4.31.0
 trl==0.5.0
-xformers==0.0.21
+xformers==0.0.22
