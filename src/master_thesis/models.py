@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 import torch
 from langchain.llms import HuggingFacePipeline, OpenAI, VertexAI
@@ -52,7 +52,11 @@ class AnthropicChatModel(BaseModel):
 
         return output.content
 
-    def finetune(self, dataset: BaseDataset) -> BaseModel:
+    def finetune(
+        self,
+        dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
+    ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
 
@@ -83,7 +87,11 @@ class GoogleChatModel(BaseModel):
 
         return output.content
 
-    def finetune(self, dataset: BaseDataset) -> BaseModel:
+    def finetune(
+        self,
+        dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
+    ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
 
@@ -114,7 +122,11 @@ class GoogleTextModel(BaseModel):
 
         return output
 
-    def finetune(self, dataset: BaseDataset) -> BaseModel:
+    def finetune(
+        self,
+        dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
+    ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
 
@@ -131,7 +143,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
 
         self._hf_model_id = (
             model_id.split("/")[1]
-            if any([x in model_id for x in ["openai/gpt2", "google/t5"]])
+            if any(x in model_id for x in ["openai/gpt2", "google/t5"])
             else model_id
         )
 
@@ -171,6 +183,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
         peft_config: PeftConfig = DEFAULT_PEFT_CONFIG,
         train_config: TrainingArguments = DEFAULT_TRAIN_CONFIG,
     ) -> BaseModel:
@@ -192,13 +205,10 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
         # Prepare datasets
         train_dataset = dataset.train.map(
             lambda ex: {
-                "text": [" ".join(references) for references in ex["references"]]
-            },
-            batched=True,
-        )
-        test_dataset = dataset.test.map(
-            lambda ex: {
-                "text": [" ".join(references) for references in ex["references"]]
+                "text": [
+                    prompt(*row)
+                    for row in zip(ex["references"], ex["question"], ex["answer"])
+                ]
             },
             batched=True,
         )
@@ -207,7 +217,6 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
         trainer = SFTTrainer(
             model=self._model.pipeline.model,
             train_dataset=train_dataset,
-            eval_dataset=test_dataset,
             peft_config=peft_config,
             dataset_text_field="text",
             max_seq_length=None,
@@ -261,7 +270,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
 
         self._hf_model_id = (
             model_id.split("/")[1]
-            if any([x in model_id for x in ["openai/gpt2", "google/t5"]])
+            if any(x in model_id for x in ["openai/gpt2", "google/t5"])
             else model_id
         )
 
@@ -301,6 +310,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
         peft_config: PeftConfig = DEFAULT_PEFT_CONFIG,
         train_config: TrainingArguments = DEFAULT_TRAIN_CONFIG,
     ) -> BaseModel:
@@ -322,13 +332,10 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
         # Prepare datasets
         train_dataset = dataset.train.map(
             lambda ex: {
-                "text": [" ".join(references) for references in ex["references"]]
-            },
-            batched=True,
-        )
-        test_dataset = dataset.test.map(
-            lambda ex: {
-                "text": [" ".join(references) for references in ex["references"]]
+                "text": [
+                    prompt(*row)
+                    for row in zip(ex["references"], ex["question"], ex["answer"])
+                ]
             },
             batched=True,
         )
@@ -337,7 +344,6 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
         trainer = SFTTrainer(
             model=self._model.pipeline.model,
             train_dataset=train_dataset,
-            eval_dataset=test_dataset,
             peft_config=peft_config,
             dataset_text_field="text",
             max_seq_length=None,
@@ -405,7 +411,11 @@ class OpenAIChatModel(BaseModel):
 
         return output.content
 
-    def finetune(self, dataset: BaseDataset) -> BaseModel:
+    def finetune(
+        self,
+        dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
+    ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
 
@@ -436,5 +446,9 @@ class OpenAITextModel(BaseModel):
 
         return output
 
-    def finetune(self, dataset: BaseDataset) -> BaseModel:
+    def finetune(
+        self,
+        dataset: BaseDataset,
+        prompt: Callable[[List[str], str, str], str],
+    ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")

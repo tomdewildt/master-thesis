@@ -2,7 +2,7 @@ import os
 import gc
 import json
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Callable, Dict, List, Optional, Type
 
 import torch
 from tqdm import tqdm
@@ -26,7 +26,8 @@ class Experiment:
     _metric: BaseMetric
     _metric_config: Dict[str, Any]
 
-    _finetune: Optional[BaseDataset]
+    _finetune_dataset: Optional[BaseDataset]
+    _finetune_prompt: Optional[Callable[[List[str], str, str], str]]
     _finetune_config: Dict[str, Any]
     _prompt: Optional[BasePrompt]
     _prompt_config: Dict[str, Any]
@@ -42,7 +43,8 @@ class Experiment:
         dataset_config: Dict[str, Any],
         metric: str | Type[BaseMetric],
         metric_config: Dict[str, Any],
-        finetune: Optional[str | Type[BaseDataset]] = None,
+        finetune_dataset: Optional[str | Type[BaseDataset]] = None,
+        finetune_prompt: Optional[Callable[[List[str], str, str], str]] = None,
         finetune_config: Dict[str, Any] = {
             "dataset_config": {},
             "peft_config": None,
@@ -66,17 +68,22 @@ class Experiment:
         self._metric_config = metric_config
 
         # Set finetune (optional)
-        if finetune is not None:
-            self._finetune = self._get_dataset(finetune, finetune_config["dataset"])
+        if finetune_dataset is not None and finetune_prompt is not None:
+            self._finetune_dataset = self._get_dataset(
+                finetune_dataset,
+                finetune_config["dataset"],
+            )
+            self._finetune_prompt = finetune_prompt
         else:
-            self._finetune = finetune
+            self._finetune_dataset = None
+            self._finetune_prompt = None
         self._finetune_config = finetune_config
 
         # Set prompt (optional)
         if prompt is not None:
             self._prompt = self._get_prompt(prompt, self._model)
         else:
-            self._prompt = prompt
+            self._prompt = None
         self._prompt_config = prompt_config
 
         # Set name
@@ -90,10 +97,11 @@ class Experiment:
         os.makedirs(f"../data/{self._experiment_name}", exist_ok=True)
 
         # Train
-        if self._finetune:
+        if self._finetune_dataset and self._finetune_prompt:
             # Finetune model
             self._model = self._model.finetune(
-                self._finetune,
+                self._finetune_dataset,
+                self._finetune_prompt,
                 peft_config=self._finetune_config.get(
                     "peft_config", DEFAULT_PEFT_CONFIG
                 ),
@@ -137,8 +145,16 @@ class Experiment:
             "name": self._experiment_name,
             "model": self._model.__class__.__name__,
             "model_config": self._model_config,
-            "finetune": self._finetune.__class__.__name__ if self._finetune else None,
-            "finetune_config": self._finetune_config if self._finetune else None,
+            "finetune_dataset": (
+                self._finetune_dataset.__class__.__name__
+                if self._finetune_dataset and self._finetune_prompt
+                else None
+            ),
+            "finetune_config": (
+                self._finetune_config
+                if self._finetune_dataset and self._finetune_prompt
+                else None
+            ),
             "prompt": self._prompt.__class__.__name__ if self._prompt else None,
             "prompt_config": self._prompt_config if self._prompt else None,
             "dataset": self._dataset.__class__.__name__,
@@ -155,7 +171,11 @@ class Experiment:
                 "max_similarity": max(similarities),
                 "threshold": self._experiment_threshold,
             },
-            "train_size": self._finetune.train.shape[0] if self._finetune else None,
+            "train_size": (
+                self._finetune_dataset.train.shape[0]
+                if self._finetune_dataset and self._finetune_prompt
+                else None
+            ),
             "test_size": test.shape[0],
         }
         self._write_experiment(results)
