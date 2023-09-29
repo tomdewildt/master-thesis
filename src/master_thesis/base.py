@@ -1,6 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from datasets import Dataset
 
@@ -92,13 +92,13 @@ class BasePrompt(ABC):
     def run(self, references: List[str], question: str) -> str:
         raise NotImplementedError
 
-    def _format_references(self, references: Union[List[str], None]) -> str:
+    def _format_references(self, references: Optional[List[str]]) -> str:
         if not references:
             return ""
 
         return "\n".join(references)
 
-    def _format_examples(self, examples: Union[List[Example], None]) -> str:
+    def _format_examples(self, examples: Optional[List[Example]]) -> str:
         if not examples:
             return ""
 

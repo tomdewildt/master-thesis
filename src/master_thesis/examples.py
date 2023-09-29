@@ -1,9 +1,9 @@
 import os
-from typing import List, NamedTuple, Union
+from typing import List, NamedTuple, Optional
 
 
 class Example(NamedTuple):
-    references: Union[List[str], None]
+    references: Optional[List[str]]
     question: str
     answer: str
 

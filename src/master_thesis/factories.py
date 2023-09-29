@@ -79,7 +79,7 @@ class MetricFactory:
     def list_metrics(self) -> List[str]:
         return list(self._METRIC_IDS.keys())
 
-    def get_metric(self, metric_id) -> BaseMetric:
+    def get_metric(self, metric_id: str) -> BaseMetric:
         if not self._METRIC_IDS.get(metric_id):
             raise ValueError("invalid metric")
 
@@ -145,20 +145,20 @@ class ModelFactory:
     def get_model(
         self,
         model_id: str,
-        max_tokens: Optional[int] = None,
+        max_tokens: int = 256,
         stop_sequences: Optional[List[str]] = None,
-        temperature: Optional[float] = None,
-        top_p: Optional[float] = None,
+        temperature: float = 0.7,
+        top_p: float = 1.0,
     ) -> BaseModel:
         if not self._MODEL_IDS.get(model_id):
             raise ValueError("invalid model")
 
         return self._MODEL_IDS[model_id](
             model_id,
-            max_tokens,
-            stop_sequences,
-            temperature,
-            top_p,
+            max_tokens=max_tokens,
+            stop_sequences=stop_sequences,
+            temperature=temperature,
+            top_p=top_p,
         )
 
     def __repr__(self) -> str:

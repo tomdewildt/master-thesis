@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List, Optional, Union
 
 from langchain.evaluation import load_evaluator
 
@@ -13,9 +13,9 @@ _STRING_DISTANCE = "string_distance"
 class FewShotChainOfThoughtPrompt(BasePrompt):
     def run(
         self,
-        references: Union[List[str], None],
+        references: Optional[List[str]],
         question: str,
-        examples: Union[List[Example], None] = None,
+        examples: Optional[List[Example]] = None,
     ) -> str:
         prompt = f"""
         {self._format_examples(examples)}
@@ -31,9 +31,9 @@ class FewShotChainOfThoughtPrompt(BasePrompt):
 class FewShotPrompt(BasePrompt):
     def run(
         self,
-        references: Union[List[str], None],
+        references: Optional[List[str]],
         question: str,
-        examples: Union[List[Example], None] = None,
+        examples: Optional[List[Example]] = None,
     ) -> str:
         prompt = f"""
         {self._format_examples(examples)}
@@ -49,7 +49,7 @@ class FewShotPrompt(BasePrompt):
 class InstructionPrompt(BasePrompt):
     def run(
         self,
-        references: Union[List[str], None],
+        references: Optional[List[str]],
         question: str,
         instruction: str = "",
     ) -> str:
@@ -76,7 +76,7 @@ class LeastToMostPrompt(BasePrompt):
         ),
     ]
 
-    def run(self, references: Union[List[str], None], question: str) -> str:
+    def run(self, references: Optional[List[str]], question: str) -> str:
         prompt = f"""
         {self._format_examples(self._EXAMPLES)}
         {self._format_references(references)}
@@ -89,7 +89,7 @@ class LeastToMostPrompt(BasePrompt):
 
 
 class PlanAndSolvePrompt(BasePrompt):
-    def run(self, references: Union[List[str], None], question: str) -> str:
+    def run(self, references: Optional[List[str]], question: str) -> str:
         prompt = f"""
         {self._format_references(references)}
 
@@ -114,7 +114,7 @@ class SelfAskPrompt(BasePrompt):
         ),
     ]
 
-    def run(self, references: Union[List[str], None], question: str) -> str:
+    def run(self, references: Optional[List[str]], question: str) -> str:
         prompt = f"""
         {self._format_examples(self._EXAMPLES)}
         {self._format_references(references)}
@@ -140,10 +140,10 @@ class SelfConsistencyPrompt(BasePrompt):
 
     def run(
         self,
-        references: Union[List[str], None],
+        references: Optional[List[str]],
         question: str,
         n: int = 3,
-        examples: Union[List[Example], None] = None,
+        examples: Optional[List[Example]] = None,
     ) -> str:
         prompt = f"""
         {self._format_examples(examples)}
@@ -180,7 +180,7 @@ class SelfConsistencyPrompt(BasePrompt):
 
 
 class ZeroShotChainOfThoughtPrompt(BasePrompt):
-    def run(self, references: Union[List[str], None], question: str) -> str:
+    def run(self, references: Optional[List[str]], question: str) -> str:
         prompt = f"""
         {self._format_references(references)}
 
@@ -192,7 +192,7 @@ class ZeroShotChainOfThoughtPrompt(BasePrompt):
 
 
 class ZeroShotPrompt(BasePrompt):
-    def run(self, references: Union[List[str], None], question: str) -> str:
+    def run(self, references: Optional[List[str]], question: str) -> str:
         prompt = f"""
         {self._format_references(references)}
 

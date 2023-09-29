@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 
 import torch
 from langchain.llms import HuggingFacePipeline, OpenAI, VertexAI
@@ -30,7 +30,7 @@ class AnthropicChatModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
@@ -61,7 +61,7 @@ class GoogleChatModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
@@ -92,7 +92,7 @@ class GoogleTextModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
@@ -123,7 +123,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
@@ -253,7 +253,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
@@ -383,7 +383,7 @@ class OpenAIChatModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
@@ -414,7 +414,7 @@ class OpenAITextModel(BaseModel):
         self,
         model_id: str,
         max_tokens: int = 256,
-        stop_sequences: List[str] = None,
+        stop_sequences: Optional[List[str]] = None,
         temperature: float = 0.7,
         top_p: float = 1.0,
     ) -> None:
