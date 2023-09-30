@@ -78,7 +78,7 @@ class BaseModel(ABC):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
     ) -> "BaseModel":
         pass
 

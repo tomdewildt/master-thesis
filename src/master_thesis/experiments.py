@@ -27,7 +27,7 @@ class Experiment:
     _metric_config: Dict[str, Any]
 
     _finetune_dataset: Optional[BaseDataset]
-    _finetune_prompt: Optional[Callable[[List[str], str, str], str]]
+    _finetune_format_function: Callable[[List[str], str, str], str]
     _finetune_config: Dict[str, Any]
     _prompt: Optional[BasePrompt]
     _prompt_config: Dict[str, Any]
@@ -44,7 +44,9 @@ class Experiment:
         metric: str | Type[BaseMetric],
         metric_config: Dict[str, Any],
         finetune_dataset: Optional[str | Type[BaseDataset]] = None,
-        finetune_prompt: Optional[Callable[[List[str], str, str], str]] = None,
+        finetune_format_function: Optional[
+            Callable[[List[str], str, str], str]
+        ] = lambda r, q, a: r,
         finetune_config: Dict[str, Any] = {
             "dataset_config": {},
             "peft_config": None,
@@ -68,22 +70,22 @@ class Experiment:
         self._metric_config = metric_config
 
         # Set finetune (optional)
-        if finetune_dataset is not None and finetune_prompt is not None:
+        if finetune_dataset is not None:
             self._finetune_dataset = self._get_dataset(
                 finetune_dataset,
                 finetune_config["dataset"],
             )
-            self._finetune_prompt = finetune_prompt
+            self._finetune_format_function = finetune_format_function
         else:
-            self._finetune_dataset = None
-            self._finetune_prompt = None
+            self._finetune_dataset = finetune_dataset
+            self._finetune_format_function = finetune_format_function
         self._finetune_config = finetune_config
 
         # Set prompt (optional)
         if prompt is not None:
             self._prompt = self._get_prompt(prompt, self._model)
         else:
-            self._prompt = None
+            self._prompt = prompt
         self._prompt_config = prompt_config
 
         # Set name
@@ -97,11 +99,11 @@ class Experiment:
         os.makedirs(f"../data/{self._experiment_name}", exist_ok=True)
 
         # Train
-        if self._finetune_dataset and self._finetune_prompt:
+        if self._finetune_dataset:
             # Finetune model
             self._model = self._model.finetune(
                 self._finetune_dataset,
-                self._finetune_prompt,
+                format_function=self._finetune_format_function,
                 peft_config=self._finetune_config.get(
                     "peft_config", DEFAULT_PEFT_CONFIG
                 ),
@@ -147,13 +149,11 @@ class Experiment:
             "model_config": self._model_config,
             "finetune_dataset": (
                 self._finetune_dataset.__class__.__name__
-                if self._finetune_dataset and self._finetune_prompt
+                if self._finetune_dataset
                 else None
             ),
             "finetune_config": (
-                self._finetune_config
-                if self._finetune_dataset and self._finetune_prompt
-                else None
+                self._finetune_config if self._finetune_dataset else None
             ),
             "prompt": self._prompt.__class__.__name__ if self._prompt else None,
             "prompt_config": self._prompt_config if self._prompt else None,
@@ -173,7 +173,7 @@ class Experiment:
             },
             "train_size": (
                 self._finetune_dataset.train.shape[0]
-                if self._finetune_dataset and self._finetune_prompt
+                if self._finetune_dataset
                 else None
             ),
             "test_size": test.shape[0],

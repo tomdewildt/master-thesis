@@ -55,7 +55,7 @@ class AnthropicChatModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -90,7 +90,7 @@ class GoogleChatModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -125,7 +125,7 @@ class GoogleTextModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -183,7 +183,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
         peft_config: PeftConfig = DEFAULT_PEFT_CONFIG,
         train_config: TrainingArguments = DEFAULT_TRAIN_CONFIG,
     ) -> BaseModel:
@@ -206,7 +206,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
         train_dataset = dataset.train.map(
             lambda ex: {
                 "text": [
-                    prompt(*row)
+                    format_function(*row)
                     for row in zip(ex["references"], ex["question"], ex["answer"])
                 ]
             },
@@ -310,7 +310,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
         peft_config: PeftConfig = DEFAULT_PEFT_CONFIG,
         train_config: TrainingArguments = DEFAULT_TRAIN_CONFIG,
     ) -> BaseModel:
@@ -333,7 +333,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
         train_dataset = dataset.train.map(
             lambda ex: {
                 "text": [
-                    prompt(*row)
+                    format_function(*row)
                     for row in zip(ex["references"], ex["question"], ex["answer"])
                 ]
             },
@@ -414,7 +414,7 @@ class OpenAIChatModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -449,6 +449,6 @@ class OpenAITextModel(BaseModel):
     def finetune(
         self,
         dataset: BaseDataset,
-        prompt: Callable[[List[str], str, str], str],
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
