@@ -133,7 +133,6 @@ class Experiment:
                     question,
                     **self._prompt_config,
                 )
-                print(prediction)
 
             # Calculate score
             similarity = self._metric.test(question, answer, prediction)
