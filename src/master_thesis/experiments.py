@@ -73,7 +73,7 @@ class Experiment:
         if finetune_dataset is not None:
             self._finetune_dataset = self._get_dataset(
                 finetune_dataset,
-                finetune_config["dataset"],
+                finetune_config["dataset_config"],
             )
             self._finetune_format_function = finetune_format_function
         else:
