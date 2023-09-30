@@ -45,8 +45,11 @@ class Experiment:
         metric_config: Dict[str, Any],
         finetune_dataset: Optional[str | Type[BaseDataset]] = None,
         finetune_format_function: Optional[
-            Callable[[List[str], str, str], str]
-        ] = lambda r, q, a: r,
+            Callable[
+                [List[str], str, str],
+                str,
+            ]
+        ] = lambda r, q, a: "\n".join(r),
         finetune_config: Dict[str, Any] = {
             "dataset_config": {},
             "peft_config": None,
