@@ -1,10 +1,10 @@
-import inspect
 from abc import ABC, abstractmethod
-from typing import List, Optional, Union
+from typing import Callable, List, Optional
 
 from datasets import Dataset
 
 from master_thesis.examples import Example
+from master_thesis.utils import format_examples, format_prompt, format_references
 
 
 class BaseDataset(ABC):
@@ -75,7 +75,11 @@ class BaseModel(ABC):
         pass
 
     @abstractmethod
-    def finetune(self, dataset: BaseDataset) -> "BaseModel":
+    def finetune(
+        self,
+        dataset: BaseDataset,
+        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+    ) -> "BaseModel":
         pass
 
     def __repr__(self) -> str:
@@ -90,35 +94,16 @@ class BasePrompt(ABC):
 
     @abstractmethod
     def run(self, references: List[str], question: str) -> str:
-        raise NotImplementedError
+        pass
 
-    def _format_references(self, references: Union[List[str], None]) -> str:
-        if not references:
-            return ""
+    def _format_references(self, references: Optional[List[str]]) -> str:
+        return format_references(references)
 
-        return "\n".join(references)
-
-    def _format_examples(self, examples: Union[List[Example], None]) -> str:
-        if not examples:
-            return ""
-
-        prompts = [
-            self._format_prompt(
-                f"""
-                {self._format_references(example.references)}
-                
-                Q: {example.question}
-                A: {example.answer}
-                ---
-                """
-            )
-            for example in examples
-        ]
-
-        return "\n".join(prompts)
+    def _format_examples(self, examples: Optional[List[Example]]) -> str:
+        return format_examples(examples)
 
     def _format_prompt(self, text: str) -> str:
-        return inspect.cleandoc(text).replace("  ", "").strip()
+        return format_prompt(text)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}(model={self._model})>"

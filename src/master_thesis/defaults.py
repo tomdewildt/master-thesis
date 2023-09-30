@@ -12,9 +12,6 @@ DEFAULT_TRAIN_CONFIG = TrainingArguments(
     # Duration
     num_train_epochs=1,  # Total number of training epochs to perform.
     max_steps=-1,  #  If set to a positive number, the total number of training steps to perform.
-    # Evaluation
-    evaluation_strategy="steps",  # Evaluation strategy to adopt during training.
-    eval_steps=20,  # Number of update steps between two evaluations.
     # Training
     group_by_length=True,  # Whether or not to group together samples of roughly the same length in the training dataset.
     gradient_accumulation_steps=1,  # Number of updates steps to accumulate before performing a backward/update pass.
@@ -26,7 +23,6 @@ DEFAULT_TRAIN_CONFIG = TrainingArguments(
     weight_decay=0.001,  # The weight decay to apply (if not zero) to all layers except.
     # Hardware
     per_device_train_batch_size=4,  # Batch size per GPU/TPU core for training.
-    per_device_eval_batch_size=4,  # Batch size per GPU/TPU core for evaluation.
     fp16=False,  # Whether to use fp16 16-bit (mixed) precision training.
     bf16=False,  # Whether to use bf16 16-bit (mixed) precision training
     # Storage
