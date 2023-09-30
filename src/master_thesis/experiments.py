@@ -172,11 +172,11 @@ class Experiment:
                 "threshold": self._experiment_threshold,
             },
             "train_size": (
-                self._finetune_dataset.train.shape[0]
+                self._finetune_dataset.train.num_rows
                 if self._finetune_dataset
                 else None
             ),
-            "test_size": test.shape[0],
+            "test_size": test.num_rows,
         }
         self._write_experiment(results)
 

@@ -69,7 +69,7 @@ class COQADataset(BaseDataset):
             batch["questions"],
             batch["answers"],
         ):
-            references.extend([story] * len(question))
+            references.extend([[story]] * len(question))
             questions.extend(question)
             answers.extend(answer["input_text"])
 
@@ -209,7 +209,7 @@ class SQUADv1Dataset(BaseDataset):
             batch["question"],
             batch["answers"],
         ):
-            references.extend([context] * len(answer["text"]))
+            references.extend([[context]] * len(answer["text"]))
             questions.extend([question] * len(answer["text"]))
             answers.extend(answer["text"])
 
@@ -277,7 +277,7 @@ class SQUADv2Dataset(BaseDataset):
             batch["question"],
             batch["answers"],
         ):
-            references.extend([context] * len(answer["text"]))
+            references.extend([[context]] * len(answer["text"]))
             questions.extend([question] * len(answer["text"]))
             answers.extend(answer["text"])
 
