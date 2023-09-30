@@ -119,7 +119,7 @@ class Experiment:
         # Test
         test = self._dataset.test
         similarities = []
-        for row in tqdm(test, desc="Evaluate:"):
+        for row in tqdm(test, desc="Evaluate"):
             references = row["references"]
             question = row["question"]
             answer = row["answer"]
