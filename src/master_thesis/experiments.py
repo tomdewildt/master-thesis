@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Type
 
 import torch
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 
 from master_thesis.base import BaseDataset, BaseMetric, BaseModel, BasePrompt
 from master_thesis.defaults import DEFAULT_PEFT_CONFIG, DEFAULT_TRAIN_CONFIG
