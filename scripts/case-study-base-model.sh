@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=case-study-base-model
-#SBATCH --output=./logs/case-study-base-model-%j.out
-#SBATCH --error=./logs/case-study-base-model-%j.error
+#SBATCH --output=case-study-base-model-%j.out
+#SBATCH --error=case-study-base-model-%j.error
 #SBATCH --chdir /home/tdewildt/master-thesis
 #SBATCH --export=ALL
 #SBATCH --get-user-env=L

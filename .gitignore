@@ -329,10 +329,6 @@ $RECYCLE.BIN/
 data/*
 !data/.gitkeep
 
-# Logs
-logs/*
-!logs/.gitkeep
-
 # Models
 models/*
 !models/.gitkeep
