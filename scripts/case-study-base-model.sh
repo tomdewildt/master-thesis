@@ -7,7 +7,7 @@
 #SBATCH --get-user-env=L
 #SBATCH --partition=gpu
 #SBATCH --gpus=1
-#SBATCH --time=00:01:00
+#SBATCH --time=00:30:00
 
 # Setup modules
 module purge
