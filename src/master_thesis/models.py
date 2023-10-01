@@ -50,7 +50,7 @@ class AnthropicChatModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model([HumanMessage(content=prompt)], stop=self._stop_sequences)
 
-        return output.content
+        return output.content.strip()
 
     def finetune(
         self,
@@ -88,7 +88,7 @@ class GoogleChatModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model([HumanMessage(content=prompt)], stop=self._stop_sequences)
 
-        return output.content
+        return output.content.strip()
 
     def finetune(
         self,
@@ -126,7 +126,7 @@ class GoogleTextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
@@ -187,7 +187,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
@@ -317,7 +317,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
@@ -424,7 +424,7 @@ class OpenAIChatModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model([HumanMessage(content=prompt)], stop=self._stop_sequences)
 
-        return output.content
+        return output.content.strip()
 
     def finetune(
         self,
@@ -462,7 +462,7 @@ class OpenAITextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
