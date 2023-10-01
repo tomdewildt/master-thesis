@@ -329,6 +329,10 @@ $RECYCLE.BIN/
 data/*
 !data/.gitkeep
 
+# Logs
+logs/*
+!logs/.gitkeep
+
 # Models
 models/*
 !models/.gitkeep
@@ -336,6 +340,6 @@ models/*
 # Scratch notebook
 notebooks/scratch.ipynb
 
-#SLURM
+# SLURM
 *.out
 *.error
