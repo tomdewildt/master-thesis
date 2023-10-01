@@ -8,6 +8,8 @@
 #SBATCH --partition=gpu
 #SBATCH --gpus=1
 #SBATCH --time=04:00:00
+#SBATCH --mail-type=BEGIN,END,FAIL
+#SBATCH --mail-user=t.l.dewildt@tilburguniversity.edu
 
 # Setup modules
 module purge
