@@ -156,9 +156,9 @@ class Experiment:
             ),
             "finetune_config": (
                 {
-                    "dataset": self._finetune_config.dataset,
-                    "peft_config": self._finetune_config.peft_config.to_dict(),
-                    "train_config": self._finetune_config.train_config.to_dict(),
+                    "dataset": self._finetune_config["dataset_config"],
+                    "peft_config": self._finetune_config["peft_config"].to_dict(),
+                    "train_config": self._finetune_config["train_config"].to_dict(),
                 }
                 if self._finetune_dataset
                 else None
