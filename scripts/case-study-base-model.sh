@@ -2,7 +2,7 @@
 #SBATCH --job-name=case-study-base-model
 #SBATCH --output=case-study-base-model-%j.out
 #SBATCH --error=case-study-base-model-%j.error
-#SBATCH --chdir /home/tdewildt
+#SBATCH --chdir /home/tdewildt/master-thesis
 #SBATCH --export=ALL
 #SBATCH --get-user-env=L
 #SBATCH --partition=gpu
@@ -28,7 +28,7 @@ if [ ! -f .env ]
 then
   export $(cat .env | xargs)
 fi
-export PYTHONPATH=master-thesis/src
+export PYTHONPATH=src
 
 # Setup dependencies
 pip install -q \
