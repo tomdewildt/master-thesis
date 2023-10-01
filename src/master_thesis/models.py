@@ -231,7 +231,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
             train_dataset=train_dataset,
             peft_config=peft_config,
             dataset_text_field="text",
-            max_seq_length=None,
+            max_seq_length=4096,  # llama 2
             tokenizer=self._model.pipeline.tokenizer,
             args=train_config,
             packing=False,
@@ -361,7 +361,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
             train_dataset=train_dataset,
             peft_config=peft_config,
             dataset_text_field="text",
-            max_seq_length=None,
+            max_seq_length=4096,  # llama 2
             tokenizer=self._model.pipeline.tokenizer,
             args=train_config,
             packing=False,
