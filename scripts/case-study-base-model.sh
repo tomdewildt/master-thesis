@@ -24,9 +24,8 @@ echo "PYTHON_VERSION = $(python --version)"
 echo "PIP_VERSION = $(pip --version)"
 
 # Setup environment
-if [ ! -f .env ]
-then
-  export $(cat .env | xargs)
+if [ -f .env ]; then
+    export $(cat .env | xargs)
 fi
 export PYTHONPATH=src
 
