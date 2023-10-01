@@ -155,7 +155,13 @@ class Experiment:
                 else None
             ),
             "finetune_config": (
-                self._finetune_config if self._finetune_dataset else None
+                {
+                    "dataset": self._finetune_config.dataset,
+                    "peft_config": self._finetune_config.peft_config.to_dict(),
+                    "train_config": self._finetune_config.train_config.to_dict(),
+                }
+                if self._finetune_dataset
+                else None
             ),
             "prompt": self._prompt.__class__.__name__ if self._prompt else None,
             "prompt_config": self._prompt_config if self._prompt else None,
