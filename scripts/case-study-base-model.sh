@@ -24,11 +24,11 @@ echo "PYTHON_VERSION = $(python --version)"
 echo "PIP_VERSION = $(pip --version)"
 
 # Setup environment
-if [ ! -f $HOME/.env ]
+if [ ! -f .env ]
 then
-  export $(cat $HOME/.env | xargs)
+  export $(cat .env | xargs)
 fi
-export PYTHONPATH=${HOME}/master-thesis/src
+export PYTHONPATH=master-thesis/src
 
 # Setup dependencies
 pip install -q \
