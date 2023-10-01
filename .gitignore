@@ -272,7 +272,6 @@ terraform.rc
 [Ll]ib
 [Ll]ib64
 [Ll]ocal
-[Ss]cripts
 pyvenv.cfg
 pip-selfcheck.json
 
@@ -336,3 +335,7 @@ models/*
 
 # Scratch notebook
 notebooks/scratch.ipynb
+
+# SLURM
+*.out
+*.error

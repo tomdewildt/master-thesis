@@ -50,12 +50,15 @@ class AnthropicChatModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model([HumanMessage(content=prompt)], stop=self._stop_sequences)
 
-        return output.content
+        return output.content.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -85,12 +88,15 @@ class GoogleChatModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model([HumanMessage(content=prompt)], stop=self._stop_sequences)
 
-        return output.content
+        return output.content.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -120,12 +126,15 @@ class GoogleTextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -178,12 +187,15 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
         peft_config: PeftConfig = DEFAULT_PEFT_CONFIG,
         train_config: TrainingArguments = DEFAULT_TRAIN_CONFIG,
     ) -> BaseModel:
@@ -219,7 +231,7 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
             train_dataset=train_dataset,
             peft_config=peft_config,
             dataset_text_field="text",
-            max_seq_length=None,
+            max_seq_length=4096,  # llama 2
             tokenizer=self._model.pipeline.tokenizer,
             args=train_config,
             packing=False,
@@ -305,12 +317,15 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
         peft_config: PeftConfig = DEFAULT_PEFT_CONFIG,
         train_config: TrainingArguments = DEFAULT_TRAIN_CONFIG,
     ) -> BaseModel:
@@ -346,7 +361,7 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
             train_dataset=train_dataset,
             peft_config=peft_config,
             dataset_text_field="text",
-            max_seq_length=None,
+            max_seq_length=4096,  # llama 2
             tokenizer=self._model.pipeline.tokenizer,
             args=train_config,
             packing=False,
@@ -409,12 +424,15 @@ class OpenAIChatModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model([HumanMessage(content=prompt)], stop=self._stop_sequences)
 
-        return output.content
+        return output.content.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")
 
@@ -444,11 +462,14 @@ class OpenAITextModel(BaseModel):
     def generate(self, prompt: str) -> str:
         output = self._model(prompt, stop=self._stop_sequences)
 
-        return output
+        return output.strip()
 
     def finetune(
         self,
         dataset: BaseDataset,
-        format_function: Callable[[List[str], str, str], str] = lambda r, q, a: r,
+        format_function: Callable[
+            [List[str], str, str],
+            str,
+        ] = lambda r, q, a: "\n".join(r),
     ) -> BaseModel:
         raise NotImplementedError("Finetuning is not supported for this model.")

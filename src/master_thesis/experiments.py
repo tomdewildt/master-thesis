@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any, Callable, Dict, List, Optional, Type
 
 import torch
-from tqdm import tqdm
+from tqdm.autonotebook import tqdm
 
 from master_thesis.base import BaseDataset, BaseMetric, BaseModel, BasePrompt
 from master_thesis.defaults import DEFAULT_PEFT_CONFIG, DEFAULT_TRAIN_CONFIG
@@ -45,8 +45,11 @@ class Experiment:
         metric_config: Dict[str, Any],
         finetune_dataset: Optional[str | Type[BaseDataset]] = None,
         finetune_format_function: Optional[
-            Callable[[List[str], str, str], str]
-        ] = lambda r, q, a: r,
+            Callable[
+                [List[str], str, str],
+                str,
+            ]
+        ] = lambda r, q, a: "\n".join(r),
         finetune_config: Dict[str, Any] = {
             "dataset_config": {},
             "peft_config": None,
@@ -73,7 +76,7 @@ class Experiment:
         if finetune_dataset is not None:
             self._finetune_dataset = self._get_dataset(
                 finetune_dataset,
-                finetune_config["dataset"],
+                finetune_config["dataset_config"],
             )
             self._finetune_format_function = finetune_format_function
         else:
@@ -119,7 +122,7 @@ class Experiment:
         # Test
         test = self._dataset.test
         similarities = []
-        for row in tqdm(test):
+        for row in tqdm(test, desc="Evaluate"):
             references = row["references"]
             question = row["question"]
             answer = row["answer"]
@@ -133,7 +136,6 @@ class Experiment:
                     question,
                     **self._prompt_config,
                 )
-                print(prediction)
 
             # Calculate score
             similarity = self._metric.test(question, answer, prediction)
@@ -153,7 +155,13 @@ class Experiment:
                 else None
             ),
             "finetune_config": (
-                self._finetune_config if self._finetune_dataset else None
+                {
+                    "dataset": self._finetune_config["dataset_config"],
+                    "peft_config": self._finetune_config["peft_config"].to_dict(),
+                    "train_config": self._finetune_config["train_config"].to_dict(),
+                }
+                if self._finetune_dataset
+                else None
             ),
             "prompt": self._prompt.__class__.__name__ if self._prompt else None,
             "prompt_config": self._prompt_config if self._prompt else None,
@@ -172,11 +180,11 @@ class Experiment:
                 "threshold": self._experiment_threshold,
             },
             "train_size": (
-                self._finetune_dataset.train.shape[0]
+                self._finetune_dataset.train.num_rows
                 if self._finetune_dataset
                 else None
             ),
-            "test_size": test.shape[0],
+            "test_size": test.num_rows,
         }
         self._write_experiment(results)
 

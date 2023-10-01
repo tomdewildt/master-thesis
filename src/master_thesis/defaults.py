@@ -1,6 +1,7 @@
 from peft import LoraConfig
 from transformers import TrainingArguments
 
+
 DEFAULT_PEFT_CONFIG = LoraConfig(
     lora_alpha=16,  # Higher values assign more weight to the LoRA activations.
     lora_dropout=0.1,  # Dropout probability of the LoRA layers.
@@ -32,3 +33,5 @@ DEFAULT_TRAIN_CONFIG = TrainingArguments(
     logging_steps=25,  # Number of update steps between two logs.
     report_to="all",  # The list of integrations to report the results and logs to.
 )
+
+RANDOM_SEED = 42
