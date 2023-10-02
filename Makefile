@@ -1,4 +1,4 @@
-.PHONY: init notebook lint
+.PHONY: init notebook lint deploy/plan deploy/apply deploy/destroy
 .DEFAULT_GOAL := help
 
 NAMESPACE := tomdewildt
@@ -20,6 +20,7 @@ help: ## Show this help
 ##
 
 init: ## Initialize the environment
+	terraform -chdir=./infrastructure init
 	for f in requirements/*.txt; do \
 		pip install -r "$$f"; \
 	done
@@ -32,4 +33,15 @@ notebook: ## Run the notebook server
 ##
 
 lint: ## Run lint
-	pylint src
+	pylint src test
+
+##
+
+deploy/plan: ## Plan deployment
+	terraform -chdir=./infrastructure plan
+
+deploy/apply: ## Apply deployment
+	terraform -chdir=./infrastructure apply
+
+deploy/destroy: ## Destroy deployment
+	terraform -chdir=./infrastructure destroy
