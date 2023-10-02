@@ -17,7 +17,7 @@ from master_thesis.utils import format_references, format_prompt
 
 # Finetune
 def finetune_format_function(references: List[str], question: str, answer: str) -> str:
-    prompt = f"""<s>[INST] <<SYS>>
+    prompt = f"""<s>[INST] <<SYS>>Context:
         {format_references(references)}
         <</SYS>>
 
@@ -31,7 +31,7 @@ def finetune_format_function(references: List[str], question: str, answer: str) 
 # Prompts
 class SimpleLLaMAPrompt(BasePrompt):
     def run(self, references: Optional[List[str]], question: str) -> str:
-        prompt = f"""<s>[INST] <<SYS>>
+        prompt = f"""<s>[INST] <<SYS>>Context:
         {self._format_references(references)}
         <</SYS>>
 
@@ -119,7 +119,7 @@ class NoContextDataset(SQUADv1Dataset):
     ) -> Callable[[Dict[str, Any], int], Dict[str, Any]]:
         def map_function(sample: Dict[str, Any], idx: int) -> Dict[str, Any]:
             if idx >= start_idx and idx <= end_idx:
-                return {**sample, "references": [""]}
+                return {**sample, "references": [""], "answer": "-"}
             return sample
 
         return map_function

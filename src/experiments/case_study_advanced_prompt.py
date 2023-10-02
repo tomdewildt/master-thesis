@@ -16,6 +16,7 @@ class AdvancedLLaMAPrompt(BasePrompt):
         prompt = f"""<s>[INST] <<SYS>>Answer the question based on the context below:
         * Only provide the answer, no extra explanation.
         * Only use words from the context below in the answer.
+        * If the question cannot be answered using the context or if the context is missing, answer with '-'.
         
         -----
         {self._format_references(references)}
@@ -105,7 +106,7 @@ class NoContextDataset(SQUADv1Dataset):
     ) -> Callable[[Dict[str, Any], int], Dict[str, Any]]:
         def map_function(sample: Dict[str, Any], idx: int) -> Dict[str, Any]:
             if idx >= start_idx and idx <= end_idx:
-                return {**sample, "references": [""]}
+                return {**sample, "references": [""], "answer": "-"}
             return sample
 
         return map_function
