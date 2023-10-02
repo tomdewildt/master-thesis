@@ -104,7 +104,7 @@ data "template_cloudinit_config" "cic" {
       - ufw allow 8888 comment "Allow Jupyter"
       - ufw --force enable
       - sudo -H -i -u ${var.username} bash -c "curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10"
-      - sudo -H -i -u ${var.username} bash -c "pip3.10 install -U jsonschema jupyter zipp"
+      - sudo -H -i -u ${var.username} bash -c "pip3.10 install -U jupyter setuptools"
       - sudo -H -i -u ${var.username} bash -c "jupyter notebook --generate-config"
       - echo "" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
       - echo "c.ServerApp.ip = '0.0.0.0'" >> /home/${var.username}/.jupyter/jupyter_notebook_config.py
