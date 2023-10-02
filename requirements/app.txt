@@ -4,7 +4,7 @@ bert-score==0.3.13
 bitsandbytes==0.41.1
 BLEURT @ git+https://github.com/google-research/bleurt.git@cebe7e6f996b40910cfaa520a63db47807e3bf5c
 datasets==2.14.4
-google-cloud-aiplatform==1.31.0
+google-cloud-aiplatform==1.34.0
 langchain==0.0.270
 nltk==3.8.1
 openai==0.27.8
