@@ -12,7 +12,7 @@
 #SBATCH --mail-user=t.l.dewildt@tilburguniversity.edu
 
 # Setup modules
-if [ -z "${SLURM_JOB_ID}" ]; then
+if [ ! -z "${SLURM_JOB_ID}" ]; then
     module purge
     module load 2022
     module load aiohttp/3.8.3-GCCcore-11.3.0
