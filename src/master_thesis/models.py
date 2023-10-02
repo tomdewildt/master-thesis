@@ -1,3 +1,4 @@
+import gc
 import os
 from typing import Callable, List, Optional
 
@@ -243,6 +244,13 @@ class HuggingFaceAutoregressiveTextModel(BaseModel):
         # Store model
         trainer.save_model()
 
+        # Cleanup
+        del self._model
+        del trainer
+        gc.collect()
+        torch.cuda.empty_cache()
+        gc.collect()
+
         # Set model
         self._model = HuggingFacePipeline(
             pipeline=pipeline(
@@ -372,6 +380,13 @@ class HuggingFaceSeq2SeqTextModel(BaseModel):
 
         # Store model
         trainer.save_model()
+
+        # Cleanup
+        del self._model
+        del trainer
+        gc.collect()
+        torch.cuda.empty_cache()
+        gc.collect()
 
         # Set model
         self._model = HuggingFacePipeline(

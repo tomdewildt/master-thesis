@@ -1,10 +1,9 @@
 import os
-import gc
 import json
 from datetime import datetime
+from timeit import default_timer as timer
 from typing import Any, Callable, Dict, List, Optional, Type
 
-import torch
 from tqdm.autonotebook import tqdm
 
 from master_thesis.base import BaseDataset, BaseMetric, BaseModel, BasePrompt
@@ -102,6 +101,7 @@ class Experiment:
         os.makedirs(f"../data/{self._experiment_name}", exist_ok=True)
 
         # Train
+        train_start_time = timer()
         if self._finetune_dataset:
             # Finetune model
             self._model = self._model.finetune(
@@ -114,20 +114,20 @@ class Experiment:
                     "train_config", DEFAULT_TRAIN_CONFIG
                 ),
             )
-
-            # Cleanup
-            gc.collect()
-            torch.cuda.empty_cache()
+        train_end_time = timer()
 
         # Test
-        test = self._dataset.test
+        test_start_time = timer()
         similarities = []
-        for row in tqdm(test, desc="Evaluate"):
+        inference_durations = []
+        metric_durations = []
+        for row in tqdm(self._dataset.test, desc="Evaluate"):
             references = row["references"]
             question = row["question"]
             answer = row["answer"]
 
             # Prompt model
+            inference_start_time = timer()
             if not self._prompt:
                 prediction = ZeroShotPrompt(self._model).run(references, question)
             else:
@@ -136,15 +136,31 @@ class Experiment:
                     question,
                     **self._prompt_config,
                 )
+            inference_end_time = timer()
 
-            # Calculate score
+            # Calculate similarity
+            metric_start_time = timer()
             similarity = self._metric.test(question, answer, prediction)
+            metric_end_time = timer()
+
+            # Append results
             similarities.append(similarity)
+            inference_durations.append(inference_end_time - inference_start_time)
+            metric_durations.append(metric_end_time - metric_start_time)
 
-            # Write
-            self._write_prediction(references, question, answer, prediction, similarity)
+            # Save results
+            self._write_prediction(
+                references,
+                question,
+                answer,
+                prediction,
+                similarity,
+                inference_end_time - inference_start_time,
+                metric_end_time - metric_start_time,
+            )
+        test_end_time = timer()
 
-        # Evaluate
+        # Save results
         results = {
             "name": self._experiment_name,
             "model": self._model.__class__.__name__,
@@ -179,12 +195,20 @@ class Experiment:
                 "max_similarity": max(similarities),
                 "threshold": self._experiment_threshold,
             },
-            "train_size": (
-                self._finetune_dataset.train.num_rows
-                if self._finetune_dataset
-                else None
-            ),
-            "test_size": test.num_rows,
+            "duration": {
+                "train_duration": round(train_end_time - train_start_time),
+                "test_duration": round(test_end_time - test_start_time),
+                "avg_inference_duration": round(
+                    sum(inference_durations) / len(inference_durations)
+                ),
+                "min_inference_duration": round(min(inference_durations)),
+                "max_inference_duration": round(max(inference_durations)),
+                "avg_metric_duration": round(
+                    sum(metric_durations) / len(metric_durations)
+                ),
+                "min_metric_duration": round(min(metric_durations)),
+                "max_metric_duration": round(max(metric_durations)),
+            },
         }
         self._write_experiment(results)
 
@@ -241,6 +265,8 @@ class Experiment:
         answer: str,
         prediction: str,
         similarity: float,
+        inference_duration: float,
+        metric_duration: float,
     ) -> None:
         with open(
             f"../data/{self._experiment_name}/predictions.jsonl",
@@ -253,6 +279,8 @@ class Experiment:
                 "answer": answer,
                 "prediction": prediction,
                 "similarity": similarity,
+                "inference_duration": round(inference_duration),
+                "metric_duration": round(metric_duration),
             }
             handle.write(json.dumps(prediction) + "\n")
 

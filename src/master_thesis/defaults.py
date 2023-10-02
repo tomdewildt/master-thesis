@@ -11,7 +11,7 @@ DEFAULT_PEFT_CONFIG = LoraConfig(
 
 DEFAULT_TRAIN_CONFIG = TrainingArguments(
     # Duration
-    num_train_epochs=1,  # Total number of training epochs to perform.
+    num_train_epochs=3,  # Total number of training epochs to perform.
     max_steps=-1,  #  If set to a positive number, the total number of training steps to perform.
     # Training
     group_by_length=True,  # Whether or not to group together samples of roughly the same length in the training dataset.
