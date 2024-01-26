@@ -1,5 +1,5 @@
 accelerate==0.21.0
-anthropic==0.3.10
+anthropic==0.12.0
 bert-score==0.3.13
 bitsandbytes==0.41.1
 BLEURT @ git+https://github.com/google-research/bleurt.git@cebe7e6f996b40910cfaa520a63db47807e3bf5c
