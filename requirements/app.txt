@@ -1,7 +1,7 @@
 accelerate==0.26.1
 anthropic==0.12.0
 bert-score==0.3.13
-bitsandbytes==0.41.1
+bitsandbytes==0.42.0
 BLEURT @ git+https://github.com/google-research/bleurt.git@cebe7e6f996b40910cfaa520a63db47807e3bf5c
 datasets==2.16.1
 google-cloud-aiplatform==1.40.0
